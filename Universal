@@ -14,7 +14,7 @@ local function createLoadingScreen(gameName, duration)
     local blur = Instance.new("BlurEffect")
     blur.Size = 0
     blur.Parent = Lighting
-    TweenService:Create(blur, TweenInfo.new(0.6), {Size = 24}):Play()
+    TweenService:Create(blur, TweenInfo.new(0.6), {Size = 48}):Play() -- Much blurrier
 
     local gui = Instance.new("ScreenGui")
     gui.Name = "UniversalLoader"
@@ -73,15 +73,17 @@ local function createLoadingScreen(gameName, duration)
 
     task.spawn(function()
         local start = tick()
+        local capTime = 180 -- 3 minutes
         while tick() - start < duration and gui.Parent do
-            local progress = (tick() - start) / duration
+            local elapsed = tick() - start
+            local progress = math.min(elapsed / capTime, 0.99) -- Cap at 99% after 3 mins
             bar.Size = UDim2.new(progress, 0, 1, 0)
             percent.Text = math.floor(progress * 100) .. "%"
             task.wait(0.1)
         end
-        bar.Size = UDim2.new(1, 0, 1, 0)
-        percent.Text = "100%"
-        task.wait(1)
+        bar.Size = UDim2.new(0.99, 0, 1, 0)
+        percent.Text = "99%"
+        task.wait(duration - capTime) -- Wait remaining time
         gui:Destroy()
         blur:Destroy()
     end)
