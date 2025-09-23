@@ -109,7 +109,7 @@ local function createLoadingScreen(gameName, duration)
             task.wait(0.1)
         end
         bar.Size = UDim2.new(0.99, 0, 1, 0)
-        percent.Text = "99%"
+        percent.Text = "99.99%"
         -- Keep GUI and blur indefinitely
     end)
 end
